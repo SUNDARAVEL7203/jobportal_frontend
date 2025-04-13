@@ -1,4 +1,4 @@
-const BASE_URL = "https://jobportal-backend-hh41.vercel.app"
+const BASE_URL = "https://jobportal-backend-tx5x.onrender.com"
 
 export const USER_API_END_POINT=`${BASE_URL}/api/v1/user`;
 
