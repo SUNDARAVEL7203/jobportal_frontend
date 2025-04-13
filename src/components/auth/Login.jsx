@@ -15,15 +15,12 @@ import { Loader2 } from 'lucide-react'
 const Login = () => {
 
   const [input, setInput] = useState({
-
     email: "",
     password: "",
     role: "",
-
-
   });
 
-  const { loading,user } = useSelector(store => store.auth)
+  const { loading, user } = useSelector(store => store.auth)
   const navigate = useNavigate()
   const dispatch = useDispatch()
 
@@ -38,37 +35,44 @@ const Login = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     try {
-      dispatch(setLoading(true))
+      dispatch(setLoading(true));
       const res = await axios.post(`${USER_API_END_POINT}/login`, input, {
         headers: {
-          "Content-type": "application/json"
+          "Content-type": "application/json",
         },
-        withCredentials: true
+        withCredentials: true,
       });
-      console.log(res.data.success)
       if (res.data.success) {
-        dispatch(setUser(res.data.user))
-        navigate("/")
-        toast.success(res.data.message)
+        dispatch(setUser(res.data.user));
+        navigate("/");
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message); // Error message from backend
       }
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        toast.error(error.response.data.message || "Something went wrong");
+      } else if (error.request) {
+        toast.error("Backend did not respond. Please try again.");
+      } else {
+        toast.error("Error with the request.");
+      }
     } finally {
-      dispatch(setLoading(false))
+      dispatch(setLoading(false));
     }
   }
-  useEffect(() => {
-    if(user){
-      navigate("/")
-    }
-  })
 
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   return (
     <div>
       <Navbar />
       <div className='flex items-center justify-center max-w-7xl mx-auto'>
-        <form onSubmit={submitHandler} className='w-1/2 border border-gray-200 rounded-md p-4 my-10 '>
+        <form onSubmit={submitHandler} className='w-1/2 border border-gray-200 rounded-md p-4 my-10'>
           <h1 className='font-bold text-xl mb-5'>Login</h1>
 
           <div className='my-2'>
@@ -113,19 +117,20 @@ const Login = () => {
                   className="cursor-pointer" />
                 <Label htmlFor="r2">Recruiter</Label>
               </div>
-
             </RadioGroup>
-
           </div>
+
           {
-            loading ? <Button className="w-full my-4"> <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Please wait </Button> : <Button type="submit" className="w-full my-4">Login</Button>
+            loading ? 
+            <Button className="w-full my-4"> <Loader2 className='mr-2 h-4 w-4 animate-spin' /> Please wait </Button> : 
+            <Button type="submit" className="w-full my-4">Login</Button>
           }
 
-          <span className='text-sm'>Dont have an account? <Link to="/signup" className="text-blue-600">Signup</Link></span>
+          <span className='text-sm'>Don't have an account? <Link to="/signup" className="text-blue-600">Signup</Link></span>
         </form>
       </div>
     </div>
   )
 }
 
-export default Login
+export default Login;
